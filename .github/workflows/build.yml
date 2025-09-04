@@ -1,0 +1,67 @@
+name: Build Android SDK Tools
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        #abi: [armeabi-v7a, arm64-v8a, x86, x86_64]
+        abi: [arm64-v8a]
+    env:
+      PLATFORM_VERSION: 35.0.2
+      NDK_VERSION: r26b
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python3 python3-pip cmake ninja-build \
+          build-essential unzip curl git openjdk-11-jdk
+
+    - name: Download Android NDK
+      run: |
+        curl -O https://dl.google.com/android/repository/android-ndk-${{ env.NDK_VERSION }}-linux.zip
+        unzip android-ndk-${{ env.NDK_VERSION }}-linux.zip
+        mv android-ndk-${{ env.NDK_VERSION }} android-ndk
+
+    - name: Fetch AOSP sources
+      run: |
+        python3 get_source.py --tags platform-tools-${{ env.PLATFORM_VERSION }}
+
+    - name: Build protobuf (host)
+      run: |
+        cd src/protobuf
+        mkdir build && cd build
+        cmake -GNinja \
+          -Dprotobuf_BUILD_TESTS=OFF \
+          -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+          ../cmake
+        ninja -j$(nproc)
+
+    - name: Build SDK tools
+      run: |
+        PROTOC=$(realpath src/protobuf/build/protoc)
+        python3 build.py \
+          --ndk=$(realpath android-ndk) \
+          --abi=${{ matrix.abi }} \
+          --build=build/${{ matrix.abi }} \
+          --protoc=${PROTOC}
+        cd build/${{ matrix.abi }}/bin
+        zip -r ../android-sdk-tools-static-aarch64.zip * 
+
+    - name: Upload artifacts
+      uses: softprops/action-gh-release@v2
+      with:
+        files: build/${{ matrix.abi }}/*.zip
