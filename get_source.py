@@ -71,6 +71,7 @@ def patches():
     subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/proto/ApkInfo.proto.patch"), shell=True)
     subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/proto/Resources.proto.patch"), shell=True)
     subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/proto/ResourcesInternal.proto.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/revanced/aapt2.patch"), shell=True)
 
     # symlink googletest to boringssl/**/googletest
     src = Path.cwd() / "src/googletest"
