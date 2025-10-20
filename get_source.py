@@ -60,22 +60,22 @@ def patches():
     shutil.copy2(Path("patches/misc/deployagentscript.inc"), Path("src/adb/fastdeploy/deployagent"))
 
     shutil.copy2(Path("patches/misc/platform_tools_version.h"), Path("src/soong/cc/libbuildversion/include"))
-    
-    pattern = "\'s#frameworks/base/tools/aapt2/Configuration.proto#Configuration.proto#g\'"
-    pattern2 = "\'s#frameworks/base/tools/aapt2/Resources.proto#Resources.proto#g\'"
-    subprocess.run("sed -i {} {}".format(pattern2, Path.cwd() / "src/base/tools/aapt2/ApkInfo.proto"), shell=True)
-    subprocess.run("sed -i {} {}".format(pattern, Path.cwd() / "src/base/tools/aapt2/Resources.proto"), shell=True)
-    subprocess.run("sed -i {} {}".format(pattern, Path.cwd() / "src/base/tools/aapt2/ResourcesInternal.proto"), shell=True)
-    subprocess.run("sed -i {} {}".format(pattern2, Path.cwd() / "src/base/tools/aapt2/ResourcesInternal.proto"), shell=True)
-    
-    
-    pattern3 = "\'s#/usr/src/googletest#${CMAKE_SOURCE_DIR}/src/googletest#g\'"
-    subprocess.run("sed -i {} {}".format(pattern3, Path.cwd() / "src/abseil-cpp/CMakeLists.txt"), shell=True)
+
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/abseil-cpp_CMakeLists.txt.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/cgroup_map.cpp.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/dex_file.cc.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/instruction_set.h.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/mem_map.cc.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/protobuf_CMakeLists.txt.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/task_runner.h.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/proto/ApkInfo.proto.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/proto/Resources.proto.patch"), shell=True)
+    subprocess.run("patch -p1 < {}".format(Path.cwd() / "patches/proto/ResourcesInternal.proto.patch"), shell=True)
 
     # symlink googletest to boringssl/**/googletest
     src = Path.cwd() / "src/googletest"
     dest = Path.cwd() / "src/boringssl/src/third_party/googletest"
-    subprocess.run("ln -sf {} {}".format(src, dest), shell=True)
+    subprocess.run("ln -sfn {} {}".format(src, dest), shell=True)
 
 def check(command):
     try:
@@ -89,25 +89,24 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tags", default="master", help="Specify the Git cloning tags or branch")
     args = parser.parse_args()
-    
+
     # check necessary packages
     check("git")
     check("go")
     check("bison")
     check("flex")
-    
+
     # git clone submodules
     with open('repos.json', 'r') as file:
         repos = json.load(file)
     for repo in repos:
         if not Path(repo['path']).exists():
             subprocess.run('git clone -c advice.detachedHead=false --depth 1 --branch {} {} {}'.format(args.tags, repo['url'], repo['path']), shell=True)
-    
+
     # patch files
     patches()
-    
+
     print("download success!!")
 
 if __name__ == "__main__":
     main()
- 

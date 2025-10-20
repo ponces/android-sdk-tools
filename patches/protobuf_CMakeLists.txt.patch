@@ -2,13 +2,14 @@ diff --git a/src/protobuf/CMakeLists.txt b/src/protobuf/CMakeLists.txt
 index 08cb330..85882a2 100644
 --- a/src/protobuf/CMakeLists.txt 2023-09-20 13:56:08.461395523 +0800
 +++ b/src/protobuf/CMakeLists.txt 2023-09-20 13:57:08.561395525 +0800
-@@ -298,7 +298,8 @@ endif (MSVC)
+@@ -298,7 +298,9 @@ endif (MSVC)
  include_directories(
    ${ZLIB_INCLUDE_DIRECTORIES}
    ${protobuf_BINARY_DIR}
 -  ${protobuf_SOURCE_DIR}/src)
 +  ${protobuf_SOURCE_DIR}/src
-+  ${protobuf_SOURCE_DIR}/config)
++  ${protobuf_SOURCE_DIR}/config
++  ${protobuf_SOURCE_DIR}/android)
  
  if (protobuf_UNICODE)
    add_definitions(-DUNICODE -D_UNICODE)

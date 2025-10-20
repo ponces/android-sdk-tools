@@ -1,0 +1,14 @@
+--- a/src/core/libprocessgroup/cgroup_map.cpp	2025-10-20 14:48:41.336551059 +0800
++++ b/src/core/libprocessgroup/cgroup_map.cpp	2025-10-20 14:49:20.310284808 +0800
+@@ -218,9 +218,9 @@ int CgroupMap::ActivateControllers(const std::string& path) const {
+             const ACgroupController* controller = ACgroupFile_getController(i);
+             const uint32_t flags = ACgroupController_getFlags(controller);
+             uint32_t max_activation_depth = UINT32_MAX;
+-            if (__builtin_available(android 36, *)) {
++            /*if (__builtin_available(android 36, *)) {
+                 max_activation_depth = ACgroupController_getMaxActivationDepth(controller);
+-            }
++            }*/
+             const int depth = util::GetCgroupDepth(ACgroupController_getPath(controller), path);
+ 
+             if (flags & CGROUPRC_CONTROLLER_FLAG_NEEDS_ACTIVATION && depth < max_activation_depth) {

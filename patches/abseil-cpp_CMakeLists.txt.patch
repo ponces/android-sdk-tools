@@ -1,0 +1,11 @@
+--- a/src/abseil-cpp/CMakeLists.txt	2025-10-20 14:48:55.626846855 +0800
++++ b/src/abseil-cpp/CMakeLists.txt	2025-10-20 14:49:32.606221886 +0800
+@@ -145,7 +145,7 @@ option(ABSL_USE_GOOGLETEST_HEAD
+ 
+ set(ABSL_GOOGLETEST_DOWNLOAD_URL "" CACHE STRING "If set, download GoogleTest from this URL")
+ 
+-set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
++set(ABSL_LOCAL_GOOGLETEST_DIR "${CMAKE_SOURCE_DIR}/src/googletest" CACHE PATH
+   "If ABSL_USE_GOOGLETEST_HEAD is OFF and ABSL_GOOGLETEST_URL is not set, specifies the directory of a local GoogleTest checkout."
+   )
+ 

@@ -1,0 +1,11 @@
+--- a/src/base/tools/aapt2/ApkInfo.proto	2025-10-20 14:46:38.640973519 +0800
++++ b/src/base/tools/aapt2/ApkInfo.proto	2025-10-20 14:47:12.886315519 +0800
+@@ -16,7 +16,7 @@
+ 
+ syntax = "proto3";
+ 
+-import "frameworks/base/tools/aapt2/Resources.proto";
++import "Resources.proto";
+ 
+ package aapt.pb;
+ 
